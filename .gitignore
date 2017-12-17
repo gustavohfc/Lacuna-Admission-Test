@@ -30,7 +30,7 @@
 *.exe
 *.out
 *.app
-hack_empire
+hack_the_empire
 
 # VScode configuration
 .vscode

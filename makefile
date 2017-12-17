@@ -7,7 +7,7 @@ INCLUDES = $(wildcard $(INC_DIR)/*.h)
 OBJECTS  = $(SOURCES:$(SRC_DIR)/%.cpp=$(OBJ_DIR)/%.o)
 
 CPPFLAGS = -g -Wall -Werror -std=c++14 -I$(INC_DIR)
-EXE = hack_empire
+EXE = hack_the_empire
 CXX = g++
 
 all: $(EXE)
@@ -21,4 +21,4 @@ $(OBJECTS): $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp
 .PHONY: clean
 clean:
 	rm $(OBJ_DIR)/*
-
+	rm $(EXE)
