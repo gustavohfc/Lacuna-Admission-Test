@@ -21,7 +21,7 @@ public:
     void SendMessage(std::string message);
     void SendMessage(std::vector<unsigned char> message);
     std::vector<unsigned char> ReceiveMessageExactSize(unsigned messageSize);
-    std::vector<unsigned char> ReceiveMessage(unsigned maxBytes);
+    std::vector<unsigned char> ReceiveMessage(unsigned maxBytes = 1024);
 };
 
 #endif // CONNECTION_H

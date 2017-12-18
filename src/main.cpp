@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include "Connection.h"
 #include "EmpireMessage.h"
+#include "RebelsCommunication.h"
 
 #include <stdio.h>
 
@@ -21,7 +22,7 @@ const std::string REBEL_PORT = "31816";
 const std::string TOKEN = "a74cbe68-dfa5-446d-8868-da326a2baa62";
 
 // Function prototypes
-void HackTheEmpire(Connection& empireConnection);
+void HackTheEmpire(Connection& empireConnection, Connection& rebelsConnection);
 
 
 int main()
@@ -31,11 +32,10 @@ int main()
         Connection empireConnection(SERVER_ADDR, EMPIRE_PORT);
         empireConnection.Authenticate(TOKEN);
 
-        // Connection rebelsConnection();
-        // rebelsConnection.Authenticate(TOKEN);
-        // throw std::runtime_error("teste");
+        Connection rebelsConnection(SERVER_ADDR, REBEL_PORT);
+        rebelsConnection.Authenticate(TOKEN);
 
-        HackTheEmpire(empireConnection);
+        HackTheEmpire(empireConnection, rebelsConnection);
     }
     catch (std::exception& e)
     {
@@ -53,7 +53,7 @@ int main()
 
 
 // Get messages from the empire, decode the information and send to the rebels until receive a "sucess" message
-void HackTheEmpire(Connection& empireConnection)
+void HackTheEmpire(Connection& empireConnection, Connection& rebelsConnection)
 {
     // Check if the user Token was accepted by the Empire server
     EmpireMessage empireMessage(empireConnection);
@@ -61,6 +61,11 @@ void HackTheEmpire(Connection& empireConnection)
     {
         throw std::runtime_error("The user Token wasn't accepted by the Empire server.");
     }
+
+    // Receive the public key from the Rebels
+    std::string rebelsPublicKey = RebelsCommunication::ReceivePublicKey(rebelsConnection);
+
+    std::cout << rebelsPublicKey << std::endl;
 
     do
     {
