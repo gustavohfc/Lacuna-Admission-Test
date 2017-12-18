@@ -57,11 +57,45 @@ void HackTheEmpire(Connection& empireConnection)
 {
     // Check if the user Token was accepted by the Empire server
     EmpireMessage empireMessage(empireConnection);
-    if (empireMessage.GetType() != EmpireMessageType::ASCII ||
-        empireMessage.GetMessageData() != "User accepted.")
+    if (empireMessage.GetType() != EmpireMessageType::ASCII || empireMessage.GetMessageData() != "User accepted.")
     {
         throw std::runtime_error("The user Token wasn't accepted by the Empire server.");
     }
+
+    do
+    {
+        empireConnection.SendMessage("tell me more");
+
+        // Receive the response from the empire, if it's fail to decrypt the message then it's ignored
+        try
+        {
+            std::cout << "\n\nReceiving new message from the Empire" << std::endl;
+            empireMessage = EmpireMessage(empireConnection);
+        }
+        catch (DecryptEmpireMessageException& e)
+        {
+            std::cout << e.what() << std::endl;
+            continue;
+        }
+
+        if (empireMessage.GetType() == EmpireMessageType::ASCII && empireMessage.GetMessageData() == "Game over.")
+        {
+            throw std::runtime_error("Receive \"Game over!\" from the Empire server.");
+        }
+
+        std::cout << "Message received from the Empire: " << empireMessage.GetMessageData() << std::endl;
+
+        // Check if there are coordinates in the message to be send to the Rebels
+        if (empireMessage.ContainCoordinates())
+        {
+            std::cout << "The message contains coordinates, sending to the Rebels." << std::endl;
+        }
+        else
+        {
+            std::cout << "The message doesn't contain coordinates." << std::endl;
+        }
+
+    } while (true); // TODO: Conditional with the rebel response
 
     empireConnection.SendMessage("stop");
 }

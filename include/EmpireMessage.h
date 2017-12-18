@@ -2,9 +2,22 @@
 #define EMPIRE_MESSAGE_H
 
 #include <string>
+#include <exception>
 #include "Connection.h"
 
 enum class EmpireMessageType {ASCII, ENCRYPTED};
+
+
+// Define a new exeption to indicate that the message from the empire 
+class DecryptEmpireMessageException : public std::exception
+{
+public:
+    virtual const char* what() const throw()
+    {
+        return "Couldn't find the encryption key of a message from the Empire, ignoring this message.";
+    }
+};
+
 
 class EmpireMessage
 {
@@ -24,14 +37,17 @@ private:
     std::string messageData;
 
     void ReceiveMessage(Connection& empireConnection);
-    bool isChecksumCorrect();
+    bool IsChecksumCorrect();
     void CheckMessageType();
+    void DecryptMessage();
+    uint8_t GetEncrytKey();
 
 public:
     EmpireMessage(Connection& empireConnection);
 
     EmpireMessageType GetType() const;
     std::string GetMessageData() const;
+    bool ContainCoordinates();
 };
 
 #endif // EMPIRE_MESSAGE_H
