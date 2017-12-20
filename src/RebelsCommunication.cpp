@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <regex>
+#include <algorithm>
 
 #include "RebelsCommunication.h"
 
@@ -35,14 +36,28 @@ std::vector<unsigned char> RebelsCommunication::MakeRebelsMessage(std::string me
     message.push_back((unsigned char) messageData.size() >> 8); // Most significant byte from the size
     message.push_back((unsigned char) messageData.size()); // Least significant byte from the size
 
-    // TODO: Encrypt the message
-    // int encryptExponent = atoi(publicKey.c_str());
-    // int modulos = atoi(publicKey.substr(publicKey.find(" ") + 1).c_str());
+    // Encrypt the message
+    uint encryptExponent = atoi(publicKey.c_str());
+    uint modulus = atoi(publicKey.substr(publicKey.find(" ") + 1).c_str());
 
     for (auto letter : messageData)
     {
-        message.push_back(letter);
+        message.push_back(ModularExponentiationEncrypt(letter, encryptExponent, modulus));
     }
 
     return message;
+}
+
+
+// Calculate the modular exponentiation encryption for the base
+unsigned char RebelsCommunication::ModularExponentiationEncrypt(unsigned char base, uint encryptExponent, uint modulus)
+{
+    uint result = 1;
+
+    for (uint exponent = 1; exponent <= encryptExponent; exponent++)
+    {
+        result = (result * base) % modulus;
+    }
+
+    return result;
 }

@@ -77,6 +77,7 @@ void HackTheEmpire(Connection& empireConnection, Connection& rebelsConnection)
         }
         catch (DecryptEmpireMessageException& e)
         {
+            // Fail decrypting the message, ignoring this message and going to the next.
             std::cout << e.what() << std::endl;
             continue;
         }
