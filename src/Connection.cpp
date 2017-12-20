@@ -68,7 +68,7 @@ void Connection::Authenticate(std::string token)
 }
 
 
-// Convert the message string to a char vector so it can be send to the server.
+// Convert the std::string message to a vector of unsigned char so it can be send to the server.
 void Connection::SendMessage(std::string message)
 {
     SendMessage(std::vector<unsigned char> (message.begin(), message.end()));
@@ -105,7 +105,7 @@ std::vector<unsigned char> Connection::ReceiveMessageExactSize(unsigned messageS
     {
         std::vector<unsigned char> newData = ReceiveMessage(messageSize - message.size());
 
-        // Append the newData in the end of the message.
+        // Append the newData at the end of the message.
         message.insert(message.end(), newData.begin(), newData.end());
     }
 
@@ -113,6 +113,7 @@ std::vector<unsigned char> Connection::ReceiveMessageExactSize(unsigned messageS
 }
 
 
+// Receive a message from the socket with the size limited by maxBytes.
 std::vector<unsigned char> Connection::ReceiveMessage(unsigned maxBytes)
 {
     std::vector<unsigned char> message;

@@ -5,4 +5,6 @@
 namespace RebelsCommunication
 {
     std::string ReceivePublicKey(Connection& rebelsConnection);
+    // std::string ReceiveResponse(Connection& rebelsConnection);
+    std::vector<unsigned char> MakeRebelsMessage(std::string messageData, std::string publicKey);
 }

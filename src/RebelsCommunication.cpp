@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <regex>
 
 #include "RebelsCommunication.h"
@@ -19,4 +20,29 @@ std::string RebelsCommunication::ReceivePublicKey(Connection& rebelsConnection)
     {
         throw std::runtime_error("Invalid public key received from the Rebels. (" + publicKey + ")");
     }
+}
+
+
+// std::string ReceiveResponse(Connection& rebelsConnection)
+// {}
+
+
+// Returns a encrypted message to be send to the Rebels
+std::vector<unsigned char> RebelsCommunication::MakeRebelsMessage(std::string messageData, std::string publicKey)
+{
+    std::vector<unsigned char> message;
+
+    message.push_back((unsigned char) messageData.size() >> 8); // Most significant byte from the size
+    message.push_back((unsigned char) messageData.size()); // Least significant byte from the size
+
+    // TODO: Encrypt the message
+    // int encryptExponent = atoi(publicKey.c_str());
+    // int modulos = atoi(publicKey.substr(publicKey.find(" ") + 1).c_str());
+
+    for (auto letter : messageData)
+    {
+        message.push_back(letter);
+    }
+
+    return message;
 }

@@ -5,6 +5,7 @@
 
 // Private methods
 
+// Receive a new message from the empire
 void EmpireMessage::ReceiveMessage(Connection& empireConnection)
 {
     std::vector<unsigned char> sizeBytes = empireConnection.ReceiveMessageExactSize(2);
@@ -15,6 +16,7 @@ void EmpireMessage::ReceiveMessage(Connection& empireConnection)
         messageRawData = empireConnection.ReceiveMessageExactSize(payloadSize - 1);
         messageChecksum = empireConnection.ReceiveMessageExactSize(1)[0];
 
+        // If the checksum is invilid then ask the server to send again.
         if (!IsChecksumCorrect())
         {
             std::cout << "Receive a message from the Empire containing a invalid checksum, asking the server to send again." << std::endl;
@@ -34,9 +36,9 @@ bool EmpireMessage::IsChecksumCorrect()
     calculatedChecksum += (uint8_t) payloadSize >> 8;
     calculatedChecksum += (uint8_t) payloadSize;
 
-    for (auto character : messageRawData)
+    for (uint8_t byte : messageRawData)
     {
-        calculatedChecksum += character;
+        calculatedChecksum += byte;
     }
 
     return calculatedChecksum == messageChecksum;
@@ -74,23 +76,17 @@ void EmpireMessage::DecryptMessage()
 // the encryption key couldn't be found it throws the exception DecryptEmpireMessageException.
 uint8_t EmpireMessage::GetEncrytKey()
 {
-    uint8_t possibleKeys[5];
-
     // Move the mask "Vader" over the messageRawData trying to find the key
     for (unsigned i = 0; i < messageRawData.size() - 4; i++)
     {
-        possibleKeys[0] = messageRawData[i] ^ 'V';
-        possibleKeys[1] = messageRawData[i + 1] ^ 'a';
-        possibleKeys[2] = messageRawData[i + 2] ^ 'd';
-        possibleKeys[3] = messageRawData[i + 3] ^ 'e';
-        possibleKeys[4] = messageRawData[i + 4] ^ 'r';
+        uint8_t possibleKey = messageRawData[i] ^ 'V';
 
-        if (possibleKeys[0] == possibleKeys[1] &&
-            possibleKeys[0] == possibleKeys[2] &&
-            possibleKeys[0] == possibleKeys[3] &&
-            possibleKeys[0] == possibleKeys[4])
+        if (possibleKey == (messageRawData[i + 1] ^ 'a') &&
+            possibleKey == (messageRawData[i + 2] ^ 'd') &&
+            possibleKey == (messageRawData[i + 3] ^ 'e') &&
+            possibleKey == (messageRawData[i + 4] ^ 'r') )
         {
-            return possibleKeys[0];
+            return possibleKey;
         }
     }
 
@@ -101,11 +97,13 @@ uint8_t EmpireMessage::GetEncrytKey()
 
 
 
+
 // Public methods
 
 EmpireMessage::EmpireMessage(Connection& empireConnection)
 {
     ReceiveMessage(empireConnection);
+
     CheckMessageType();
 
     if (type == EmpireMessageType::ASCII)
@@ -126,7 +124,7 @@ EmpireMessageType EmpireMessage::GetType() const
 }
 
 
-// Returns the decrypted message received from the Empire.
+// Returns the decrypted or ASCII message received from the Empire.
 std::string EmpireMessage::GetMessageData() const
 {
     return messageData;

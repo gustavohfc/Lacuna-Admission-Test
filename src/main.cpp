@@ -6,9 +6,6 @@
 #include "EmpireMessage.h"
 #include "RebelsCommunication.h"
 
-#include <stdio.h>
-
-
 // Server address, it's the same for both the empire and the rebels
 const std::string SERVER_ADDR = "lacuna.ddns.net";
 
@@ -23,6 +20,7 @@ const std::string TOKEN = "a74cbe68-dfa5-446d-8868-da326a2baa62";
 
 // Function prototypes
 void HackTheEmpire(Connection& empireConnection, Connection& rebelsConnection);
+
 
 
 int main()
@@ -55,6 +53,8 @@ int main()
 // Get messages from the empire, decode the information and send to the rebels until receive a "sucess" message
 void HackTheEmpire(Connection& empireConnection, Connection& rebelsConnection)
 {
+    std::string rebelsResponse;
+
     // Check if the user Token was accepted by the Empire server
     EmpireMessage empireMessage(empireConnection);
     if (empireMessage.GetType() != EmpireMessageType::ASCII || empireMessage.GetMessageData() != "User accepted.")
@@ -64,8 +64,6 @@ void HackTheEmpire(Connection& empireConnection, Connection& rebelsConnection)
 
     // Receive the public key from the Rebels
     std::string rebelsPublicKey = RebelsCommunication::ReceivePublicKey(rebelsConnection);
-
-    std::cout << rebelsPublicKey << std::endl;
 
     do
     {
@@ -94,13 +92,18 @@ void HackTheEmpire(Connection& empireConnection, Connection& rebelsConnection)
         if (empireMessage.ContainCoordinates())
         {
             std::cout << "The message contains coordinates, sending to the Rebels." << std::endl;
+
+            // Encrypt the message with coordinates and send to the Rebels
+            rebelsConnection.SendMessage(RebelsCommunication::MakeRebelsMessage(empireMessage.GetMessageData(), rebelsPublicKey));
         }
         else
         {
             std::cout << "The message doesn't contain coordinates." << std::endl;
         }
 
-    } while (true); // TODO: Conditional with the rebel response
+        // rebelsResponse = RebelsCommunication::ReceiveResponse(rebelsConnection);
+
+    } while (true);
 
     empireConnection.SendMessage("stop");
 }
