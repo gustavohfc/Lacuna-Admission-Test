@@ -96,15 +96,26 @@ void HackTheEmpire(Connection& empireConnection, Connection& rebelsConnection)
 
             // Encrypt the message with coordinates and send to the Rebels
             rebelsConnection.SendMessage(RebelsCommunication::MakeRebelsMessage(empireMessage.GetMessageData(), rebelsPublicKey));
+
+            rebelsResponse = RebelsCommunication::ReceiveResponse(rebelsConnection);
+            std::cout << "Message received from the Rebels: " << rebelsResponse << std::endl;
         }
         else
         {
             std::cout << "The message doesn't contain coordinates." << std::endl;
         }
 
-        // rebelsResponse = RebelsCommunication::ReceiveResponse(rebelsConnection);
 
-    } while (true);
+    } while (rebelsResponse == "OK");
+
+    if (rebelsResponse == "Success")
+    {
+        std::cout << "Empire information was successfully stolen and sent to the rebels." << std::endl;
+    }
+    else if (rebelsResponse == "Game over!")
+    {
+        std::cout << "\"Game over!\" received from the Rebels server, shutting down the execution." << std::endl;
+    }
 
     empireConnection.SendMessage("stop");
 }

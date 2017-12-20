@@ -24,8 +24,13 @@ std::string RebelsCommunication::ReceivePublicKey(Connection& rebelsConnection)
 }
 
 
-// std::string ReceiveResponse(Connection& rebelsConnection)
-// {}
+std::string RebelsCommunication::ReceiveResponse(Connection& rebelsConnection)
+{
+    std::vector<unsigned char> response = rebelsConnection.ReceiveMessage();
+
+    // Converts the response to a string as it has only ASCII characters
+    return std::string(response.begin(), response.end());
+}
 
 
 // Returns a encrypted message to be send to the Rebels
