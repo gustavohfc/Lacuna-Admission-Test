@@ -5,10 +5,11 @@
 #include <exception>
 #include "Connection.h"
 
+// Types of messages sent by the Empire.
 enum class EmpireMessageType {ASCII, ENCRYPTED};
 
 
-// Define a new exeption to indicate that the message from the empire 
+// Define a new exeption class to indicate that the message from the empire couldn't be decrypted.
 class DecryptEmpireMessageException : public std::exception
 {
 public:
@@ -25,11 +26,10 @@ private:
     // Identify if the message is plain ASCII or encrypted.
     EmpireMessageType type;
 
-    // Message payload size.
+    // Payload size, determined by the first two bytes of the message.
     uint16_t payloadSize;
 
-    // Payload of the message containing the raw message data that may be encrypted and the
-    // checksum.
+    // Payload of the message containing the raw message data, that may be encrypted, and the checksum.
     std::vector<unsigned char> messageRawData;
     uint8_t messageChecksum;
 

@@ -110,7 +110,7 @@ void HackTheEmpire(Connection& empireConnection, Connection& rebelsConnection)
 
     if (rebelsResponse == "Success")
     {
-        std::cout << "Empire information was successfully stolen and sent to the rebels." << std::endl;
+        std::cout << "The Empire's coordinates information was successfully stolen and sent to the rebels." << std::endl;
     }
     else if (rebelsResponse == "Game over!")
     {

@@ -13,7 +13,7 @@ std::string RebelsCommunication::ReceivePublicKey(Connection& rebelsConnection)
 
     // The public key should be a string with two numbers inside it, separated by a space, in the
     // format "XXXX YYYY" to be valid.
-    if (std::regex_search(publicKey, std::regex("")))
+    if (std::regex_match(publicKey, std::regex("[[:digit:]]+( )[[:digit:]]+")))
     {
         return publicKey;
     }
@@ -24,6 +24,7 @@ std::string RebelsCommunication::ReceivePublicKey(Connection& rebelsConnection)
 }
 
 
+// Receive the ASCII stream response from the Rebels.
 std::string RebelsCommunication::ReceiveResponse(Connection& rebelsConnection)
 {
     std::vector<unsigned char> response = rebelsConnection.ReceiveMessage();
@@ -33,7 +34,7 @@ std::string RebelsCommunication::ReceiveResponse(Connection& rebelsConnection)
 }
 
 
-// Returns a encrypted message to be send to the Rebels
+// Returns a encrypted message to be send to the Rebels.
 std::vector<unsigned char> RebelsCommunication::MakeRebelsMessage(std::string messageData, std::string publicKey)
 {
     std::vector<unsigned char> message;
